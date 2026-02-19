@@ -46,6 +46,13 @@ if %errorlevel% neq 0 (
     pause
     exit /b %errorlevel%
 )
+
+echo.
+echo [info] registering commands (clearing old commands)...
+call npm run register
+if %errorlevel% neq 0 (
+    echo [warning] command registration failed. you may need to run 'npm run register' manually.
+)
 cd ../..
 
 echo.
@@ -54,3 +61,4 @@ cd apps/voice-bot
 call npm run dev
 
 pause
+

@@ -1,0 +1,27 @@
+{
+  "name": "raffie",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev -w apps/voice-bot",
+    "build": "npm run build -w apps/voice-bot",
+    "start": "npm run start -w apps/voice-bot"
+  },
+  "description": "Raffie - Advanced Voice Bot",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "keywords": [
+    "voice",
+    "bot",
+    "discord",
+    "raffie"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@types/pg": "^8.16.0",
+    "pg": "^8.18.0"
+  }
+}

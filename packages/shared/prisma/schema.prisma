@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model VoiceGuildConfig {
+  guild_id                   String          @unique          @id
+  enabled                    Boolean         @default(true)
+  join_to_create_channel_ids String[]        @default([])
+  default_category_id        String?
+  max_temp_channels          Int             @default(10)
+  user_cooldown_seconds      Int             @default(30)
+  empty_delete_delay_seconds Int             @default(30)
+  naming_pattern             String          @default("{username}'s Channel")
+  allow_support_mention      Boolean         @default(false)
+  language                   String          @default("en")
+  created_at                 DateTime        @default(now()) @db.Timestamptz
+  updated_at                 DateTime        @default(now()) @updatedAt @db.Timestamptz
+  
+  // Relation to voice channels
+  voice_channels             VoiceChannel[]
+
+  @@map("voice_guild_configs")
+}
+
+model VoiceChannel {
+  id                  String              @id @default(uuid()) @db.Uuid
+  guild_id            String
+  channel_id          String              @unique
+  owner_id            String
+  name                String
+  user_limit          Int                 @default(0)
+  bitrate             Int                 @default(64000)
+  locked              Boolean             @default(false)
+  created_at          DateTime            @default(now()) @db.Timestamptz
+  last_active_at      DateTime            @default(now()) @db.Timestamptz
+  control_message_id  String?
+  delete_scheduled_at DateTime?           @db.Timestamptz
+  
+  // Relation to guild config (optional - allows orphan cleanup)
+  guild_config        VoiceGuildConfig?   @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+
+  @@index([guild_id])
+  @@index([channel_id])
+  @@index([owner_id])
+  @@index([guild_id, owner_id]) // Composite index for cooldown checks
+  @@index([delete_scheduled_at]) // Index for cleanup queries
+  @@map("voice_channels")
+}
